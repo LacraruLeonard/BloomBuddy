@@ -17,10 +17,10 @@
         </form>
     </div>
 <script>
- tinymce.init({
+tinymce.init({
     selector: '#my_textarea',
-    plugins: 'image',
-    toolbar: 'image',
+    plugins: 'image link autoresize charmap print preview hr anchor pagebreak',
+    toolbar: 'undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | image | link | charmap | print | preview | hr | anchor | pagebreak',
     automatic_uploads: true,
     images_upload_handler: function (blobInfo, success, failure) {
         var xhr, formData;
