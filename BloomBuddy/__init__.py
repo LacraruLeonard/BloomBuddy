@@ -3,7 +3,9 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import LoginManager
-from flask_mail import Mail
+
+
+
 
 app = Flask(__name__)
 
@@ -35,8 +37,10 @@ from BloomBuddy.core.views import core
 from BloomBuddy.users.views import users
 from BloomBuddy.error_pages.handlers import error_pages
 from BloomBuddy.blog_posts.views import blog_posts
+from BloomBuddy.blog_posts.upload_image import upload_image_blueprint
 
 app.register_blueprint(core)
 app.register_blueprint(users)
 app.register_blueprint(error_pages)
 app.register_blueprint(blog_posts)
+app.register_blueprint(upload_image_blueprint)
