@@ -9,11 +9,16 @@
             </div>
             <div class = "form-group">
                 {{form.text.label(class = "form-control-label")}}
-                {{form.text(class ="form-control form-control-lg")}}
+               {{form.text(class ="form-control form-control-lg", id='my_textarea', required=False)}}
             </div>
             <div class = "form-group">
         {{form.submit(class = "btn btn-outline-info")}}
             </div>
         </form>
     </div>
+<script>
+    tinymce.init({
+        selector: '#my_textarea'
+    });
+</script>
 {% endblock %}
