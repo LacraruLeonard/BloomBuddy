@@ -3,7 +3,7 @@
 <div class="container">
   <div class ="bg-light p-5">
     <div align='center'>
-      <h1>Welcome to the page for {{user.username}}</h1>
+      <h1>Profile  {{user.username}}</h1>
       <img src="{{url_for('static',filename='profile_pics/'+user.profile_image)}}" >
     </div>
   </div>
@@ -13,7 +13,7 @@
   Written By: <a href="{{url_for('users.user_posts',username=post.author.username)}}">{{post.author.username}}</a>
   <p class='text-muted'>Published on: {{post.date.strftime("%Y-%m-%d")}}</p>
    <br>
-   <p>{{post.text}}</p>
+   <p>{{post.text|safe}}</p>
    <br>
 {% endfor %}
 </div>
