@@ -1,31 +1,44 @@
 {%extends "base.html"%}
 {%block content%}
-<div class = "bg-light p-5">
+<div>
     <div align = 'center'>
-        <h1>Welcome to the page for {{current_user.username}}</h1>
-        <img align = 'center' src="{{url_for('static', filename='profile_pics/' + current_user.profile_image)}}" >
-        <p>{{ current_user.email }}</p>
+        <h1>Welcome, {{current_user.username}}!</h1>
+        <img align = 'center' class="rounded mx-auto d-block"  src="{{url_for('static', filename='profile_pics/' + current_user.profile_image)}}" >
     </div>
 </div>
-<div class="container">
+<div class = "container d-flex justify-content-center align-items-center vh-60">
+<div class="bg-light p-5 rounded shadow">
+    <h1 class="text-center">Update your account</h1>
   <form  method="POST" action="" enctype="multipart/form-data">
     {{ form.hidden_tag() }}
     <div class="form-group">
-      {{ form.username.label(class="form-group") }}
+      {{ form.username.label(class="form-label")}}
       {{form.username(class='form-control')  }}
     </div>
+      <br>
     <div class="form-group">
-      {{ form.email.label(class="form-group") }}
+      {{ form.email.label(class="form-label") }}
       {{form.email(class='form-control')  }}
     </div>
+        <br>
+      <div class="form-group">
+      {{ form.password.label(class="form-label")}}
+      {{ form.password(class='form-control') }}
+    </div>
+        <br>
     <div class="form-group">
-      {{ form.picture.label(class="form-group") }}
+      {{ form.pass_confirm.label(class="form-label")}}
+      {{ form.pass_confirm(class='form-control') }}
+    </div>
+        <br>
+    <div class="form-group">
+      {{ form.picture.label(class="form-label")}}
       {{ form.picture(class="form-control-file") }}
     </div>
     <div class="form-group">
         {{ form.submit(class="btn btn-primary") }}
     </div>
   </form>
-
 </div>
+    </div>
 {%endblock content%}

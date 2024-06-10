@@ -5,6 +5,7 @@ from BloomBuddy import db
 from BloomBuddy.models import User, BlogPost
 from BloomBuddy.users.forms import RegistrationForm, LoginForm, UpdateUserForm
 from BloomBuddy.users.picture_handler import add_profile_pic
+from werkzeug.security import generate_password_hash
 
 users = Blueprint('users',__name__)
 
@@ -59,6 +60,8 @@ def account():
             current_user.profile_image = pic
         current_user.username = form.username.data
         current_user.email = form.email.data
+        if form.password.data:
+            current_user.password_hash = generate_password_hash(form.password.data)
         db.session.commit()
         flash('User Account Updated')
         return redirect(url_for('users.account'))
