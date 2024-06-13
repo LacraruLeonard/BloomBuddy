@@ -41,4 +41,74 @@
   </form>
 </div>
     </div>
+
+<div class="container">
+    <h2>My Plants</h2>
+    <table id="plants-table" class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Age</th>
+                <th>Health</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for plant in plants %}
+            <tr>
+                <td>{{ plant.name }}</td>
+                <td>{{ plant.age }}</td>
+                <td>{{ plant.health }}</td>
+                <td><button class="btn btn-danger delete-plant">Delete</button></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <button id="add-plant" class="btn btn-primary">Add Plant</button>
+    <button id="save-plant" class="btn btn-primary">Save</button>
+</div>
+
+{% block scripts %}
+<script>
+document.getElementById('add-plant').addEventListener('click', function() {
+    var table = document.getElementById('plants-table');
+    var row = table.insertRow(-1);
+    var nameCell = row.insertCell(0);
+    var ageCell = row.insertCell(1);
+    var healthCell = row.insertCell(2);
+
+    nameCell.innerHTML = '<input type="text" class="form-control" placeholder="Plant Name">';
+    ageCell.innerHTML = '<select class="form-control"><option>Young</option><option>Mature</option><option>Old</option></select>';
+    healthCell.innerHTML = '<select class="form-control"><option>Healthy</option><option>Unhealthy</option></select>';
+});
+
+document.getElementById('save-plant').addEventListener('click', function() {
+    var table = document.getElementById('plants-table');
+    var plants = [];
+    for (var i = 1, row; row = table.rows[i]; i++) {
+        var plant = {
+            'name': row.cells[0].children[0].value,
+            'age': row.cells[1].children[0].value,
+            'health': row.cells[2].children[0].value
+        };
+        plants.push(plant);
+    }
+    fetch('/save_plants', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({'plants': plants})
+    }).then(function(response) {
+        return response.json();
+    }).then(function(data) {
+        alert(data.message);
+    });
+});
+    document.getElementById('plants-table').addEventListener('click', function(e) {
+    if (e.target && e.target.classList.contains('delete-plant')) {
+        e.target.closest('tr').remove();
+    }
+});
+</script>
+{% endblock %}
 {%endblock content%}

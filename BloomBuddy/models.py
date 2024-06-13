@@ -45,15 +45,6 @@ class BlogPost(db.Model):
     def __repr__(self):
         return f"Post ID: {self.id} -- Date: {self.date} -- {self.title}"
 
-#class Comment(db.Model):
-#    id = db.Column(db.Integer, primary_key=True)
-  #  text = db.Column(db.Text)
-    #user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    #post_id = db.Column(db.Integer, db.ForeignKey('blogpost.id'))
-    #timestamp = db.Column(db.DateTime, index=True, default=datetime.now(timezone.utc))
-    #user = db.relationship('User', backref='comments')
-    #def __repr__(self):
-      #  return f'<Comment {self.text}>'
 
 comments_replies = Table('comments_replies', db.Model.metadata,
     Column('comment_id', Integer, ForeignKey('comment.id')),
@@ -71,3 +62,20 @@ class Comment(db.Model):
 
     def __repr__(self):
         return f'<Comment {self.text}>'
+
+class Plant(db.Model):
+    __tablename__ = 'plants'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(64), nullable=False)
+    age = db.Column(db.String(64), nullable=False)
+    health = db.Column(db.String(64), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+
+    def __init__(self, name, age, health, user_id):
+        self.name = name
+        self.age = age
+        self.health = health
+        self.user_id = user_id
+
+    def __repr__(self):
+        return f"Plant {self.name}, Age {self.age}, Health {self.health}"

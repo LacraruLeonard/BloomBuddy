@@ -1,8 +1,8 @@
 # users/views.py
-from flask import render_template,url_for,flash,redirect,request,Blueprint
+from flask import render_template, url_for, flash, redirect, request, Blueprint, jsonify
 from flask_login import login_user, current_user, logout_user, login_required
 from BloomBuddy import db
-from BloomBuddy.models import User, BlogPost
+from BloomBuddy.models import User, BlogPost, Plant
 from BloomBuddy.users.forms import RegistrationForm, LoginForm, UpdateUserForm
 from BloomBuddy.users.picture_handler import add_profile_pic
 from werkzeug.security import generate_password_hash
@@ -53,6 +53,7 @@ def logout():
 @login_required
 def account():
     form = UpdateUserForm()
+    plants = Plant.query.filter_by(user_id=current_user.id).all()
     if form.validate_on_submit():
         if form.picture.data:
             username = current_user.username
@@ -69,12 +70,24 @@ def account():
         form.username.data = current_user.username
         form.email.data = current_user.email
     profile_image = url_for('static', filename='profile_pics/' + current_user.profile_image)
-    return render_template('account.html', profile_image=profile_image, form=form)
+    return render_template('account.html', profile_image=profile_image, form=form, plants=plants)
 
 @users.route("/<username>")
 def user_posts(username):
-    page = request.args.get('page',1,type=int)
+    page = request.args.get('page', 1, type=int)
     user = User.query.filter_by(username=username).first_or_404()
-    blog_posts = BlogPost.query.filter_by(author=user).order_by(BlogPost.date.desc()).paginate(page=page,per_page=5)
-    return render_template('user_blog_posts.html',blog_posts=blog_posts,user=user)
+    blog_posts = BlogPost.query.filter_by(author=user)\
+        .order_by(BlogPost.date.desc())\
+        .paginate(page=page, per_page=5)
+    plants = Plant.query.filter_by(user_id=user.id).all()
+    return render_template('user_blog_posts.html', blog_posts=blog_posts, user=user, plants=plants)
 
+@users.route('/save_plants', methods=['POST'])
+@login_required
+def save_plants():
+    data = request.get_json()
+    for plant in data['plants']:
+        new_plant = Plant(name=plant['name'], age=plant['age'], health=plant['health'], user_id=current_user.id)
+        db.session.add(new_plant)
+    db.session.commit()
+    return jsonify({'message': 'Plants saved successfully'}), 200
