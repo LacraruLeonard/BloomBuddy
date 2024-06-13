@@ -1,12 +1,12 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="container">
-  <div class ="bg-light p-5">
-    <div align='center'>
-      <h1>Profile  {{user.username}}</h1>
-      <img src="{{url_for('static',filename='profile_pics/'+user.profile_image)}}" >
+    <div class="bg-light p-5">
+        <div align='center'>
+            <h1>Profile {{user.username}}</h1>
+            <img src="{{url_for('static',filename='profile_pics/'+user.profile_image)}}">
+        </div>
     </div>
-  </div>
 </div>
 <div class="container">
     <select id="display-option" class="form-control">
@@ -14,120 +14,124 @@
         <option value="plants">Plants</option>
     </select>
 
-<div id="blogs" class="container">
-{% for post in blog_posts.items  %}
-  <h2> <a href="{{url_for('blog_posts.blog_post',blog_post_id=post.id)}}">{{post.title}}</a> </h2>
-  Written By: <a href="{{url_for('users.user_posts',username=post.author.username)}}">{{post.author.username}}</a>
-  <p class='text-muted'>Published on: {{post.date.strftime("%Y-%m-%d")}}</p>
-   <br>
-   <p>{{post.text|safe}}</p>
-   <br>
-{% endfor %}
-</div>
-<div id="plants" class="container" style="display: none;">
-  <div class="container">
-    <h2>{{user.username}}'s Plants</h2>
-    <table id="plants-table" class="table">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Age</th>
-                <th>Health</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for plant in plants %}
-            <tr>
-                <td>{{ plant.name }}</td>
-                <td>{{ plant.age }}</td>
-                <td>{{ plant.health }}</td>
-                <td><button class="btn btn-danger delete-plant">Delete</button></td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-       {% if user.username == current_user.username %}
-        <button id="add-plant" class="btn btn-primary">Add Plant</button>
-        <button id="save-plant" class="btn btn-primary">Save</button>
-    {% endif %}
-  </div>
-</div>
+    <div id="blogs" class="container">
+        {% for post in blog_posts.items %}
+        <h2><a href="{{url_for('blog_posts.blog_post',blog_post_id=post.id)}}">{{post.title}}</a></h2>
+        Written By: <a href="{{url_for('users.user_posts',username=post.author.username)}}">{{post.author.username}}</a>
+        <p class='text-muted'>Published on: {{post.date.strftime("%Y-%m-%d")}}</p>
+        <br>
+        <p>{{post.text|safe}}</p>
+        <br>
+        {% endfor %}
+    </div>
+    <div id="plants" class="container" style="display: none;">
+        <div class="container">
+            <h2>{{user.username}}'s Plants</h2>
+            <table id="plants-table" class="table">
+                <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Age</th>
+                    <th>Health</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for plant in plants %}
+                <tr>
+                    <td>{{ plant.name }}</td>
+                    <td>{{ plant.age }}</td>
+                    <td>{{ plant.health }}</td>
+                    <td>
+                        <button class="btn btn-danger delete-plant">Delete</button>
+                    </td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            {% if user.username == current_user.username %}
+            <button id="add-plant" class="btn btn-primary">Add Plant</button>
+            <button id="save-plant" class="btn btn-primary">Save</button>
+            {% endif %}
+        </div>
+    </div>
 </div>
 <nav aria-label='Page Navigation example'>
-  <ul class="pagination justify-content-center">
-    {% for page_num in blog_posts.iter_pages(left_edge=1,right_edge=1,left_current=1,right_current=2)  %}
-      {% if blog_posts.page == page_num %}
-      <li class='page-item disabled'>
-        <a class="page-link" href="{{url_for('users.user_posts',username=user.username,page=page_num)}}">{{ page_num}}</a>
-      </li>
-      {% else %}
-      <li class='page-item'>
-        <a class="page-link" href="{{url_for('users.user_posts',username=user.username,page=page_num)}}">{{ page_num}}</a>
-      </li>
-      {% endif %}
-    {% endfor %}
-  </ul>
+    <ul class="pagination justify-content-center">
+        {% for page_num in blog_posts.iter_pages(left_edge=1,right_edge=1,left_current=1,right_current=2) %}
+        {% if blog_posts.page == page_num %}
+        <li class='page-item disabled'>
+            <a class="page-link" href="{{url_for('users.user_posts',username=user.username,page=page_num)}}">{{
+                page_num}}</a>
+        </li>
+        {% else %}
+        <li class='page-item'>
+            <a class="page-link" href="{{url_for('users.user_posts',username=user.username,page=page_num)}}">{{
+                page_num}}</a>
+        </li>
+        {% endif %}
+        {% endfor %}
+    </ul>
 </nav>
 </div>
 {% block scripts %}
 <script>
-document.getElementById('display-option').addEventListener('change', function() {
-    var selectedOption = this.value;
-    if (selectedOption === 'blogs') {
-        document.getElementById('blogs').style.display = 'block';
-        document.getElementById('plants').style.display = 'none';
-    } else if (selectedOption === 'plants') {
-        document.getElementById('blogs').style.display = 'none';
-        document.getElementById('plants').style.display = 'block';
-    }
-});
+    document.getElementById('display-option').addEventListener('change', function() {
+        var selectedOption = this.value;
+        if (selectedOption === 'blogs') {
+            document.getElementById('blogs').style.display = 'block';
+            document.getElementById('plants').style.display = 'none';
+        } else if (selectedOption === 'plants') {
+            document.getElementById('blogs').style.display = 'none';
+            document.getElementById('plants').style.display = 'block';
+        }
+    });
 </script>
 
 <script>
-document.getElementById('add-plant').addEventListener('click', function() {
-    var table = document.getElementById('plants-table');
-    var row = table.insertRow(-1);
-    var nameCell = row.insertCell(0);
-    var ageCell = row.insertCell(1);
-    var healthCell = row.insertCell(2);
+    document.getElementById('add-plant').addEventListener('click', function() {
+        var table = document.getElementById('plants-table');
+        var row = table.insertRow(-1);
+        var nameCell = row.insertCell(0);
+        var ageCell = row.insertCell(1);
+        var healthCell = row.insertCell(2);
 
-    nameCell.innerHTML = '<input type="text" class="form-control" placeholder="Plant Name">';
-    ageCell.innerHTML = '<select class="form-control"><option>Young</option><option>Mature</option><option>Old</option></select>';
-    healthCell.innerHTML = '<select class="form-control"><option>Healthy</option><option>Unhealthy</option></select>';
-});
-
-document.getElementById('save-plant').addEventListener('click', function() {
-    var table = document.getElementById('plants-table');
-    var plants = [];
-    for (var i = 1, row; row = table.rows[i]; i++) {
-        if (row.cells[0].children[0] && 'value' in row.cells[0].children[0] &&
-            row.cells[1].children[0] && 'value' in row.cells[1].children[0] &&
-            row.cells[2].children[0] && 'value' in row.cells[2].children[0]) {
-            var plant = {
-                'name': row.cells[0].children[0].value,
-                'age': row.cells[1].children[0].value,
-                'health': row.cells[2].children[0].value
-            };
-            plants.push(plant);
-        }
-    }
-    fetch('/save_plants', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({'plants': plants})
-    }).then(function(response) {
-        return response.json();
-    }).then(function(data) {
-        alert(data.message);
+        nameCell.innerHTML = '<input type="text" class="form-control" placeholder="Plant Name">';
+        ageCell.innerHTML = '<select class="form-control"><option>Young</option><option>Mature</option><option>Old</option></select>';
+        healthCell.innerHTML = '<select class="form-control"><option>Healthy</option><option>Unhealthy</option></select>';
     });
-});
-    document.getElementById('plants-table').addEventListener('click', function(e) {
-    if (e.target && e.target.classList.contains('delete-plant')) {
-        e.target.closest('tr').remove();
-    }
-});
+
+    document.getElementById('save-plant').addEventListener('click', function() {
+        var table = document.getElementById('plants-table');
+        var plants = [];
+        for (var i = 1, row; row = table.rows[i]; i++) {
+            if (row.cells[0].children[0] && 'value' in row.cells[0].children[0] &&
+                row.cells[1].children[0] && 'value' in row.cells[1].children[0] &&
+                row.cells[2].children[0] && 'value' in row.cells[2].children[0]) {
+                var plant = {
+                    'name': row.cells[0].children[0].value,
+                    'age': row.cells[1].children[0].value,
+                    'health': row.cells[2].children[0].value
+                };
+                plants.push(plant);
+            }
+        }
+        fetch('/save_plants', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({'plants': plants})
+        }).then(function(response) {
+            return response.json();
+        }).then(function(data) {
+            alert(data.message);
+        });
+    });
+        document.getElementById('plants-table').addEventListener('click', function(e) {
+        if (e.target && e.target.classList.contains('delete-plant')) {
+            e.target.closest('tr').remove();
+        }
+    });
 </script>
 {% endblock %}
 {% endblock %}

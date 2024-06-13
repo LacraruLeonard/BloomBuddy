@@ -1,66 +1,69 @@
 {%extends "base.html"%}
 {%block content%}
 <div>
-    <div align = 'center'>
+    <div align='center'>
         <h1>Welcome, {{current_user.username}}!</h1>
-        <img align = 'center' class="rounded mx-auto d-block"  src="{{url_for('static', filename='profile_pics/' + current_user.profile_image)}}" >
+        <img align='center' class="rounded mx-auto d-block"
+             src="{{url_for('static', filename='profile_pics/' + current_user.profile_image)}}">
     </div>
 </div>
-<div class = "container d-flex justify-content-center align-items-center vh-60">
-<div class="bg-light p-5 rounded shadow">
-    <h1 class="text-center">Update your account</h1>
-  <form  method="POST" action="" enctype="multipart/form-data">
-    {{ form.hidden_tag() }}
-    <div class="form-group">
-      {{ form.username.label(class="form-label")}}
-      {{form.username(class='form-control')  }}
+<div class="container d-flex justify-content-center align-items-center vh-60">
+    <div class="bg-light p-5 rounded shadow">
+        <h1 class="text-center">Update your account</h1>
+        <form method="POST" action="" enctype="multipart/form-data">
+            {{ form.hidden_tag() }}
+            <div class="form-group">
+                {{ form.username.label(class="form-label")}}
+                {{form.username(class='form-control') }}
+            </div>
+            <br>
+            <div class="form-group">
+                {{ form.email.label(class="form-label") }}
+                {{form.email(class='form-control') }}
+            </div>
+            <br>
+            <div class="form-group">
+                {{ form.password.label(class="form-label")}}
+                {{ form.password(class='form-control') }}
+            </div>
+            <br>
+            <div class="form-group">
+                {{ form.pass_confirm.label(class="form-label")}}
+                {{ form.pass_confirm(class='form-control') }}
+            </div>
+            <br>
+            <div class="form-group">
+                {{ form.picture.label(class="form-label")}}
+                {{ form.picture(class="form-control-file") }}
+            </div>
+            <div class="form-group">
+                {{ form.submit(class="btn btn-primary") }}
+            </div>
+        </form>
     </div>
-      <br>
-    <div class="form-group">
-      {{ form.email.label(class="form-label") }}
-      {{form.email(class='form-control')  }}
-    </div>
-        <br>
-      <div class="form-group">
-      {{ form.password.label(class="form-label")}}
-      {{ form.password(class='form-control') }}
-    </div>
-        <br>
-    <div class="form-group">
-      {{ form.pass_confirm.label(class="form-label")}}
-      {{ form.pass_confirm(class='form-control') }}
-    </div>
-        <br>
-    <div class="form-group">
-      {{ form.picture.label(class="form-label")}}
-      {{ form.picture(class="form-control-file") }}
-    </div>
-    <div class="form-group">
-        {{ form.submit(class="btn btn-primary") }}
-    </div>
-  </form>
 </div>
-    </div>
 
 <div class="container">
     <h2>My Plants</h2>
     <table id="plants-table" class="table">
         <thead>
-            <tr>
-                <th>Name</th>
-                <th>Age</th>
-                <th>Health</th>
-            </tr>
+        <tr>
+            <th>Name</th>
+            <th>Age</th>
+            <th>Health</th>
+        </tr>
         </thead>
         <tbody>
-            {% for plant in plants %}
-            <tr>
-                <td>{{ plant.name }}</td>
-                <td>{{ plant.age }}</td>
-                <td>{{ plant.health }}</td>
-                <td><button class="btn btn-danger delete-plant">Delete</button></td>
-            </tr>
-            {% endfor %}
+        {% for plant in plants %}
+        <tr>
+            <td>{{ plant.name }}</td>
+            <td>{{ plant.age }}</td>
+            <td>{{ plant.health }}</td>
+            <td>
+                <button class="btn btn-danger delete-plant">Delete</button>
+            </td>
+        </tr>
+        {% endfor %}
         </tbody>
     </table>
     <button id="add-plant" class="btn btn-primary">Add Plant</button>
@@ -69,46 +72,46 @@
 
 {% block scripts %}
 <script>
-document.getElementById('add-plant').addEventListener('click', function() {
-    var table = document.getElementById('plants-table');
-    var row = table.insertRow(-1);
-    var nameCell = row.insertCell(0);
-    var ageCell = row.insertCell(1);
-    var healthCell = row.insertCell(2);
+    document.getElementById('add-plant').addEventListener('click', function() {
+        var table = document.getElementById('plants-table');
+        var row = table.insertRow(-1);
+        var nameCell = row.insertCell(0);
+        var ageCell = row.insertCell(1);
+        var healthCell = row.insertCell(2);
 
-    nameCell.innerHTML = '<input type="text" class="form-control" placeholder="Plant Name">';
-    ageCell.innerHTML = '<select class="form-control"><option>Young</option><option>Mature</option><option>Old</option></select>';
-    healthCell.innerHTML = '<select class="form-control"><option>Healthy</option><option>Unhealthy</option></select>';
-});
-
-document.getElementById('save-plant').addEventListener('click', function() {
-    var table = document.getElementById('plants-table');
-    var plants = [];
-    for (var i = 1, row; row = table.rows[i]; i++) {
-        var plant = {
-            'name': row.cells[0].children[0].value,
-            'age': row.cells[1].children[0].value,
-            'health': row.cells[2].children[0].value
-        };
-        plants.push(plant);
-    }
-    fetch('/save_plants', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({'plants': plants})
-    }).then(function(response) {
-        return response.json();
-    }).then(function(data) {
-        alert(data.message);
+        nameCell.innerHTML = '<input type="text" class="form-control" placeholder="Plant Name">';
+        ageCell.innerHTML = '<select class="form-control"><option>Young</option><option>Mature</option><option>Old</option></select>';
+        healthCell.innerHTML = '<select class="form-control"><option>Healthy</option><option>Unhealthy</option></select>';
     });
-});
-    document.getElementById('plants-table').addEventListener('click', function(e) {
-    if (e.target && e.target.classList.contains('delete-plant')) {
-        e.target.closest('tr').remove();
-    }
-});
+
+    document.getElementById('save-plant').addEventListener('click', function() {
+        var table = document.getElementById('plants-table');
+        var plants = [];
+        for (var i = 1, row; row = table.rows[i]; i++) {
+            var plant = {
+                'name': row.cells[0].children[0].value,
+                'age': row.cells[1].children[0].value,
+                'health': row.cells[2].children[0].value
+            };
+            plants.push(plant);
+        }
+        fetch('/save_plants', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({'plants': plants})
+        }).then(function(response) {
+            return response.json();
+        }).then(function(data) {
+            alert(data.message);
+        });
+    });
+        document.getElementById('plants-table').addEventListener('click', function(e) {
+        if (e.target && e.target.classList.contains('delete-plant')) {
+            e.target.closest('tr').remove();
+        }
+    });
 </script>
 {% endblock %}
 {%endblock content%}

@@ -1,8 +1,8 @@
-"""initial migrate
+"""init commit
 
-Revision ID: d33c2b29558f
+Revision ID: 321c533f13ec
 Revises: 
-Create Date: 2024-06-05 08:34:36.493891
+Create Date: 2024-06-13 18:21:56.873253
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'd33c2b29558f'
+revision = '321c533f13ec'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -36,6 +36,15 @@ def upgrade():
     sa.Column('date', sa.DateTime(), nullable=False),
     sa.Column('title', sa.String(length=140), nullable=False),
     sa.Column('text', sa.Text(), nullable=False),
+    sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_table('plants',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('name', sa.String(length=64), nullable=False),
+    sa.Column('age', sa.String(length=64), nullable=False),
+    sa.Column('health', sa.String(length=64), nullable=False),
+    sa.Column('user_id', sa.Integer(), nullable=False),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
@@ -68,6 +77,7 @@ def downgrade():
         batch_op.drop_index(batch_op.f('ix_comment_timestamp'))
 
     op.drop_table('comment')
+    op.drop_table('plants')
     op.drop_table('blogpost')
     with op.batch_alter_table('users', schema=None) as batch_op:
         batch_op.drop_index(batch_op.f('ix_users_username'))

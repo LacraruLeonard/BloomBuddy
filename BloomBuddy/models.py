@@ -4,9 +4,11 @@ from flask_login import UserMixin
 from datetime import datetime, timezone
 from sqlalchemy import Table, Column, Integer, ForeignKey
 
+
 @login_manager.user_loader
 def load_user(user_id):
-   return User.query.get(user_id)
+    return User.query.get(user_id)
+
 
 class User(db.Model, UserMixin):
     __tablename__ = 'users'
@@ -28,6 +30,7 @@ class User(db.Model, UserMixin):
     def __repr__(self):
         return f"Username {self.username}"
 
+
 class BlogPost(db.Model):
     __tablename__ = 'blogpost'
     id = db.Column(db.Integer, primary_key=True)
@@ -47,9 +50,10 @@ class BlogPost(db.Model):
 
 
 comments_replies = Table('comments_replies', db.Model.metadata,
-    Column('comment_id', Integer, ForeignKey('comment.id')),
-    Column('reply_id', Integer, ForeignKey('comment.id'))
-)
+                         Column('comment_id', Integer, ForeignKey('comment.id')),
+                         Column('reply_id', Integer, ForeignKey('comment.id'))
+                         )
+
 
 class Comment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -58,10 +62,12 @@ class Comment(db.Model):
     users_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     user = db.relationship('User', backref='comments')
     post_id = db.Column(db.Integer, db.ForeignKey('blogpost.id'))
-    replies = db.relationship('Comment', secondary=comments_replies, primaryjoin=id == comments_replies.c.comment_id, secondaryjoin = id == comments_replies.c.reply_id, backref='parent_comments')
+    replies = db.relationship('Comment', secondary=comments_replies, primaryjoin=id == comments_replies.c.comment_id,
+                              secondaryjoin=id == comments_replies.c.reply_id, backref='parent_comments')
 
     def __repr__(self):
         return f'<Comment {self.text}>'
+
 
 class Plant(db.Model):
     __tablename__ = 'plants'

@@ -4,6 +4,7 @@ import os
 
 upload_image_blueprint = Blueprint('upload_image', __name__)
 
+
 @upload_image_blueprint.route('/upload_image', methods=['POST'])
 def upload_image():
     if 'file' not in request.files:
@@ -18,6 +19,7 @@ def upload_image():
         filepath = os.path.join(current_app.root_path, 'static\\uploaded_images', filename)
         file.save(filepath)
         return jsonify({'location': '/static/uploaded_images/' + filename}), 200
+
 
 def allowed_file(filename):
     ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}

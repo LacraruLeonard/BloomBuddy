@@ -7,10 +7,11 @@ from BloomBuddy.users.forms import RegistrationForm, LoginForm, UpdateUserForm
 from BloomBuddy.users.picture_handler import add_profile_pic
 from werkzeug.security import generate_password_hash
 
-users = Blueprint('users',__name__)
+users = Blueprint('users', __name__)
+
 
 # register
-@users.route('/register',methods=['GET','POST'])
+@users.route('/register', methods=['GET', 'POST'])
 def register():
     form = RegistrationForm()
     if form.validate_on_submit():
@@ -21,12 +22,11 @@ def register():
         db.session.commit()
         flash('Thanks for registration!')
         return redirect(url_for('users.login'))
-    return render_template('register.html',form=form)
-
+    return render_template('register.html', form=form)
 
 
 # login
-@users.route('/login',methods=['GET','POST'])
+@users.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
     if form.validate_on_submit():
@@ -35,10 +35,10 @@ def login():
             login_user(user)
             flash('Log in Success!')
             next = request.args.get('next')
-            if next ==None or not next[0]=='/':
+            if next == None or not next[0] == '/':
                 next = url_for('core.home')
             return redirect(next)
-    return render_template('login.html',form=form)
+    return render_template('login.html', form=form)
 
 
 # logout
@@ -57,7 +57,7 @@ def account():
     if form.validate_on_submit():
         if form.picture.data:
             username = current_user.username
-            pic = add_profile_pic(form.picture.data,username)
+            pic = add_profile_pic(form.picture.data, username)
             current_user.profile_image = pic
         current_user.username = form.username.data
         current_user.email = form.email.data
@@ -72,15 +72,17 @@ def account():
     profile_image = url_for('static', filename='profile_pics/' + current_user.profile_image)
     return render_template('account.html', profile_image=profile_image, form=form, plants=plants)
 
+
 @users.route("/<username>")
 def user_posts(username):
     page = request.args.get('page', 1, type=int)
     user = User.query.filter_by(username=username).first_or_404()
-    blog_posts = BlogPost.query.filter_by(author=user)\
-        .order_by(BlogPost.date.desc())\
+    blog_posts = BlogPost.query.filter_by(author=user) \
+        .order_by(BlogPost.date.desc()) \
         .paginate(page=page, per_page=5)
     plants = Plant.query.filter_by(user_id=user.id).all()
     return render_template('user_blog_posts.html', blog_posts=blog_posts, user=user, plants=plants)
+
 
 @users.route('/save_plants', methods=['POST'])
 @login_required
