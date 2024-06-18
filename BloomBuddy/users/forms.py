@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField
+from wtforms import StringField, PasswordField, SubmitField, BooleanField
 from wtforms.validators import DataRequired, Email, EqualTo, Optional
 from wtforms import ValidationError
 from flask_wtf.file import FileField, FileAllowed
@@ -19,6 +19,7 @@ class RegistrationForm(FlaskForm):
     password = PasswordField('Password',
                              validators=[DataRequired(), EqualTo('pass_confirm', message='Passwords must match!')])
     pass_confirm = PasswordField('Confirm Password', validators=[DataRequired()])
+    is_admin = BooleanField('Admin')
     submit = SubmitField('Register!')
 
     def check_email(self, field):

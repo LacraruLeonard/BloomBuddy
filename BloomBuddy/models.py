@@ -18,11 +18,13 @@ class User(db.Model, UserMixin):
     username = db.Column(db.String(64), unique=True, index=True)
     password_hash = db.Column(db.String(128))
     posts = db.relationship('BlogPost', backref='author', lazy=True)
+    is_admin = db.Column(db.Boolean, default=False)
 
-    def __init__(self, email, username, password):
+    def __init__(self, email, username, password, is_admin):
         self.email = email
         self.username = username
         self.password_hash = generate_password_hash(password)
+        self.is_admin = is_admin
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
@@ -71,7 +73,6 @@ class Comment(db.Model):
 
 class Plant(db.Model):
     __tablename__ = 'plants'
-    id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), nullable=False)
     age = db.Column(db.String(64), nullable=False)
     health = db.Column(db.String(64), nullable=False)

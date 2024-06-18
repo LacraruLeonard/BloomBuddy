@@ -1,5 +1,5 @@
 # users/views.py
-from flask import render_template, url_for, flash, redirect, request, Blueprint, jsonify
+from flask import render_template, url_for, flash, redirect, request, Blueprint, jsonify, abort
 from flask_login import login_user, current_user, logout_user, login_required
 from BloomBuddy import db
 from BloomBuddy.models import User, BlogPost, Plant
@@ -17,7 +17,8 @@ def register():
     if form.validate_on_submit():
         user = User(email=form.email.data,
                     username=form.username.data,
-                    password=form.password.data)
+                    password=form.password.data,
+                    is_admin=form.is_admin.data)
         db.session.add(user)
         db.session.commit()
         flash('Thanks for registration!')
@@ -54,6 +55,9 @@ def logout():
 def account():
     form = UpdateUserForm()
     plants = Plant.query.filter_by(user_id=current_user.id).all()
+    users = None
+    if current_user.is_admin:
+        users = User.query.all()
     if form.validate_on_submit():
         if form.picture.data:
             username = current_user.username
@@ -70,7 +74,7 @@ def account():
         form.username.data = current_user.username
         form.email.data = current_user.email
     profile_image = url_for('static', filename='profile_pics/' + current_user.profile_image)
-    return render_template('account.html', profile_image=profile_image, form=form, plants=plants)
+    return render_template('account.html', profile_image=profile_image, form=form, plants=plants, users=users)
 
 
 @users.route("/<username>")
@@ -93,3 +97,4 @@ def save_plants():
         db.session.add(new_plant)
     db.session.commit()
     return jsonify({'message': 'Plants saved successfully'}), 200
+
