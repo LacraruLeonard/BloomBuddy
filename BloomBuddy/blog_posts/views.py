@@ -70,11 +70,11 @@ def blog_post(blog_post_id):
 @login_required
 def delete_comment(comment_id):
     comment = Comment.query.get_or_404(comment_id)
-    if comment.users_id != current_user.id:
+    if not current_user.is_admin and comment.users_id != current_user.id:
         abort(403)
     db.session.delete(comment)
     db.session.commit()
-    flash('Your comment has been deleted', 'success')
+    flash('The comment has been deleted', 'success')
     return redirect(url_for('blog_posts.blog_post', blog_post_id=comment.post_id))
 
 
@@ -85,7 +85,7 @@ def delete_comment(comment_id):
 @login_required
 def update(blog_post_id):
     blog_post = BlogPost.query.get_or_404(blog_post_id)
-    if blog_post.author != current_user:
+    if not current_user.is_admin and blog_post.author != current_user:
         abort(403)
     form = BlogPostForm()
     if form.validate_on_submit():
@@ -108,13 +108,12 @@ def update(blog_post_id):
 @login_required
 def delete_post(blog_post_id):
     blog_post = BlogPost.query.get_or_404(blog_post_id)
-    if blog_post.author != current_user:
+    if not current_user.is_admin and blog_post.author != current_user:
         abort(403)
     db.session.delete(blog_post)
     db.session.commit()
     flash('Blog Post Deleted')
     return redirect(url_for('core.index'))
-
 
 # Search
 
