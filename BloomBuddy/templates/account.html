@@ -14,21 +14,19 @@
 {% if current_user.is_admin %}
 <div class="container">
     <h2>Users</h2>
-    <table class="table">
+    <table id="users-table" class="table">
         <thead>
         <tr>
             <th>Username</th>
             <th>Email</th>
-            <th>Admin</th>
             <th>Actions</th>
         </tr>
         </thead>
         <tbody>
         {% for user in users %}
-        <tr>
+        <tr data-user-id="{{ user.id }}">
             <td>{{ user.username }}</td>
             <td>{{ user.email }}</td>
-            <td>{{ user.is_admin }}</td>
             <td>
                 <button class="btn btn-danger delete-user">Delete</button>
             </td>
@@ -88,12 +86,12 @@
         </thead>
         <tbody>
         {% for plant in plants %}
-        <tr>
+        <tr data-plant-id="{{ plant.id }}">
             <td>{{ plant.name }}</td>
             <td>{{ plant.age }}</td>
             <td>{{ plant.health }}</td>
             <td>
-                <button class="btn btn-danger delete-plant" data-plant-id="{{ plant.id }}">Delete</button>
+                <button class="btn btn-danger delete-plant">Delete</button>
             </td>
         </tr>
         {% endfor %}
@@ -103,59 +101,88 @@
     <button id="save-plant" class="btn btn-primary">Save</button>
 </div>
 {% endif %}
+
+
 {% block scripts %}
 <script>
-    document.getElementById('add-plant').addEventListener('click', function() {
-        var table = document.getElementById('plants-table');
-        var row = table.insertRow(-1);
-        var nameCell = row.insertCell(0);
-        var ageCell = row.insertCell(1);
-        var healthCell = row.insertCell(2);
+document.addEventListener('DOMContentLoaded', function() {
+    var addPlantButton = document.getElementById('add-plant');
+    var savePlantButton = document.getElementById('save-plant');
+    var plantsTable = document.getElementById('plants-table');
+    var usersTable = document.getElementById('users-table');
 
-        nameCell.innerHTML = '<input type="text" class="form-control" placeholder="Plant Name">';
-        ageCell.innerHTML = '<select class="form-control"><option>Young</option><option>Mature</option><option>Old</option></select>';
-        healthCell.innerHTML = '<select class="form-control"><option>Healthy</option><option>Unhealthy</option></select>';
-    });
+    if (addPlantButton && savePlantButton && plantsTable) {
+        addPlantButton.addEventListener('click', function() {
+            var table = document.getElementById('plants-table');
+            var row = table.insertRow(-1);
+            var nameCell = row.insertCell(0);
+            var ageCell = row.insertCell(1);
+            var healthCell = row.insertCell(2);
 
-    document.getElementById('save-plant').addEventListener('click', function() {
-        var table = document.getElementById('plants-table');
-        var plants = [];
-        for (var i = 1, row; row = table.rows[i]; i++) {
-            var plant = {
-                'name': row.cells[0].children[0].value,
-                'age': row.cells[1].children[0].value,
-                'health': row.cells[2].children[0].value
-            };
-            plants.push(plant);
-        }
-        fetch('/save_plants', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({'plants': plants})
-        }).then(function(response) {
-            return response.json();
-        }).then(function(data) {
-            alert(data.message);
+            nameCell.innerHTML = '<input type="text" class="form-control" placeholder="Plant Name">';
+            ageCell.innerHTML = '<select class="form-control"><option>Young</option><option>Mature</option><option>Old</option></select>';
+            healthCell.innerHTML = '<select class="form-control"><option>Healthy</option><option>Unhealthy</option></select>';
         });
-    });
-document.getElementById('plants-table').addEventListener('click', function(e) {
-    if (e.target && e.target.classList.contains('delete-plant')) {
-        var plantId = e.target.getAttribute('data-plant-id');
-        fetch('/users/plants/delete/' + plantId, {
-            method: 'DELETE',
-        }).then(function(response) {
-            return response.json();
-        }).then(function(data) {
-            if (data.status === 'success') {
-                e.target.closest('tr').remove();
-            } else {
+
+        savePlantButton.addEventListener('click', function() {
+            var table = document.getElementById('plants-table');
+            var plants = [];
+            for (var i = 1, row; row = table.rows[i]; i++) {
+                if (row.cells[0] && row.cells[0].children[0] && row.cells[1] && row.cells[1].children[0] && row.cells[2] && row.cells[2].children[0]) {
+                    var plant = {
+                        'name': row.cells[0].children[0].value,
+                        'age': row.cells[1].children[0].value,
+                        'health': row.cells[2].children[0].value
+                    };
+                    plants.push(plant);
+                }
+            }
+            fetch('/save_plants', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({plants: plants})
+            }).then(function(response) {
+                return response.json();
+            }).then(function(data) {
                 alert(data.message);
+            });
+        });
+
+        plantsTable.addEventListener('click', function(e) {
+            if (e.target && e.target.classList.contains('delete-plant')) {
+                var row = e.target.closest('tr');
+                var plantId = row.dataset.plantId;
+                fetch('/delete_plant/' + plantId, {
+                    method: 'DELETE'
+                }).then(function(response) {
+                    return response.json();
+                }).then(function(data) {
+                    alert(data.message);
+                    row.remove();
+                });
             }
         });
     }
-});
+
+    if (usersTable) {
+        usersTable.addEventListener('click', function(e) {
+            if (e.target && e.target.classList.contains('delete-user')) {
+                var row = e.target.closest('tr');
+                var userId = row.dataset.userId;
+                fetch('/delete_user/' + userId, {
+                    method: 'DELETE'
+                }).then(function(response) {
+                    return response.json();
+                }).then(function(data) {
+                    alert(data.message);
+                    row.remove();
+                });
+            }
+        });
+    }
+});i
 </script>
 {% endblock %}
 {%endblock content%}

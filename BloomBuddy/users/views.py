@@ -57,7 +57,7 @@ def account():
     plants = Plant.query.filter_by(user_id=current_user.id).all()
     users = None
     if current_user.is_admin:
-        users = User.query.all()
+        users = User.query.order_by(User.username).all()
     if form.validate_on_submit():
         if form.picture.data:
             username = current_user.username
@@ -98,3 +98,22 @@ def save_plants():
     db.session.commit()
     return jsonify({'message': 'Plants saved successfully'}), 200
 
+@users.route('/delete_plant/<int:plant_id>', methods=['DELETE'])
+@login_required
+def delete_plant(plant_id):
+    plant = Plant.query.get_or_404(plant_id)
+    if plant.user_id != current_user.id:
+        abort(403)
+    db.session.delete(plant)
+    db.session.commit()
+    return jsonify({'message': 'Plant deleted successfully'}), 200
+
+@users.route('/delete_user/<int:user_id>', methods=['DELETE'])
+@login_required
+def delete_user(user_id):
+    if not current_user.is_admin:
+        abort(403)
+    user = User.query.get_or_404(user_id)
+    db.session.delete(user)
+    db.session.commit()
+    return jsonify({'message': 'User deleted successfully'}), 200

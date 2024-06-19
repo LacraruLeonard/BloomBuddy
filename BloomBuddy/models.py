@@ -73,6 +73,7 @@ class Comment(db.Model):
 
 class Plant(db.Model):
     __tablename__ = 'plants'
+    id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), nullable=False)
     age = db.Column(db.String(64), nullable=False)
     health = db.Column(db.String(64), nullable=False)
